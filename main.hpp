@@ -4,34 +4,63 @@
 
 #ifndef AOC_2020_MAIN_HPP
 #define AOC_2020_MAIN_HPP
-#include <fstream>
-#include <iostream>
-#include <optional>
 #include <vector>
 
-#include <algorithm>
 #include <fmt/color.h>
 #include <fmt/core.h>
 #include <fmt/printf.h>
-#include <iterator>
-#include <numeric>
+#include <fstream>
 #include <ranges>
-#include <sstream>
-#include <unordered_map>
 
 namespace vw = std::ranges::views;
 
+template <typename Base, typename AOC_Input, typename AOC_Reader>
+class AOCSolution {
+public:
+  std::vector<AOC_Input> AOC_ParceInput(std::string const &path) {
+    std::ifstream in(path);
+    std::string line;
+    std::vector<std::string> v;
+    while (std::getline(in, line))
+      v.emplace_back(line);
+    return AOC_Reader::from_string_vector(v);
+  }
 
-struct AOC_Input;
-struct AOC_Output;
+  template <typename func_t, typename... args_t>
+  void execute_with_timer(std::string_view message, func_t func,
+                          args_t... args) {
+    auto stime = std::chrono::high_resolution_clock::now();
+    auto result = func(std::forward<args_t...>(args...));
+    auto ftime = std::chrono::high_resolution_clock::now();
+    fmt::print(fmt::emphasis::bold | fg(fmt::color::green), "{}: {}\n", message,
+               result());
+    fmt::print(
+        fmt::emphasis::bold | fg(fmt::color::red), "Working time {} μs\n\n",
+        std::chrono::duration_cast<std::chrono::microseconds>(ftime - stime)
+            .count());
+  }
 
-AOC_Output part_1(std::vector<AOC_Input> const &in);
-AOC_Output part_2(std::vector<AOC_Input> const &in);
+  void solve() {
+    execute_with_timer(
+        "Part 1",
+        [this](auto &&v) { return self().part1(std::forward<decltype(v)>(v)); },
+        AOC_ParceInput(DAY_PATH));
+    execute_with_timer(
+        "Part 2",
+        [this](auto &&v) { return self().part2(std::forward<decltype(v)>(v)); },
+        AOC_ParceInput(DAY_PATH));
+  }
 
-struct AOC_Reader {
-  static std::vector<AOC_Input>
-  from_string_vector(const std::vector<std::string> &line);
+private:
+  Base &self() { return *static_cast<Base *>(this); }
 };
+
+#define AOC_DAY_SOLUTION(SOLUTION_CLASS)                                       \
+  int main() {                                                                 \
+    SOLUTION_CLASS solution;                                                   \
+    solution.solve();                                                          \
+    return 0;                                                                  \
+  }
 
 template<typename V>
 auto to_vector(V &&v) {
