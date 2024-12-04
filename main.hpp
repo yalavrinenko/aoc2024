@@ -6,6 +6,7 @@
 #define AOC_2020_MAIN_HPP
 #include <vector>
 
+#include <chrono>
 #include <fmt/color.h>
 #include <fmt/core.h>
 #include <fmt/printf.h>
