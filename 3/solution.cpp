@@ -32,16 +32,6 @@ struct AOC_Reader {
            as_vector;
   }
 };
-
-template <typename T> auto str_to_int(std::string_view s) {
-  T value{};
-  if (std::from_chars(s.begin(), s.end(), value).ec == std::errc{}) {
-    return value;
-  } else {
-    throw std::runtime_error{"Fail to parse int."};
-  }
-}
-
 class AOCDaySolution
     : public AOCSolution<AOCDaySolution, AOC_Input, AOC_Reader> {
   friend AOCSolution;
@@ -57,8 +47,8 @@ class AOCDaySolution
       for (auto it = rbegin; it != rend; ++it) {
         auto match = *it;
 
-        result += str_to_int<long long>(match[1].str()) *
-                  str_to_int<long long>(match[2].str());
+        result += as_value<long long>(match[1].str()) *
+                  as_value<long long>(match[2].str());
       }
     }
 
@@ -83,8 +73,8 @@ class AOCDaySolution
           enable = false;
         } else {
           if (enable) {
-            result += str_to_int<long long>(match[2].str()) *
-                      str_to_int<long long>(match[3].str());
+            result += as_value<long long>(match[2].str()) *
+                      as_value<long long>(match[3].str());
           }
         }
       }

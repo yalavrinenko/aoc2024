@@ -89,4 +89,13 @@ struct srange_to_value {
   }
 };
 
+template <typename T> auto as_value(std::string_view s) {
+  T value{};
+  if (std::from_chars(s.begin(), s.end(), value).ec == std::errc{}) {
+    return value;
+  } else {
+    throw std::runtime_error{"Fail to parse int."};
+  }
+}
+
 #endif//AOC_2020_MAIN_HPP
